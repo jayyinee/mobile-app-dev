@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # To-Do List App with Recurring Reminders for Individuals with ADHD
 
 ## Overview
