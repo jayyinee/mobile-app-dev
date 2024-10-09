@@ -102,5 +102,4 @@ Every 2 hours, the app sends a reminder to complete these top 3 tasks.
 As tasks are completed, they are marked as done and removed from the list of reminders. The next priority tasks are moved up into the top 3.
 
 ### 5. **Reminders Continue**
->>>>>>> 812848553f81870f3c23f2d45c23bba730c1d95a
 The reminders keep coming every 2 hours until all tasks are marked as done.
