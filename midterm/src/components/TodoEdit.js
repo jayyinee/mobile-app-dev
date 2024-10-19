@@ -24,7 +24,7 @@ const TodoEdit = (props) => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form class="edit-form" onSubmit={handleSubmit}>
       <label>Title:</label>
       <input class="title" type="text" onChange={handleChange} value={title} />
 

@@ -21,7 +21,7 @@ const TodoCreate = (props) => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form class="create-form" onSubmit={handleSubmit}>
       <label>Title:</label>
       <input class="title" type="text" onChange={handleChange} value={title} />
 

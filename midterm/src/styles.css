@@ -8,10 +8,18 @@
 @media only screen and (max-width: 600px) {
 
   body {
-      background-color: white;
+      background-color: #b2d7ef;
+      color: #1e3569;
     }
   
-    form {
+    .create-form {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 10px 0px 10px 0px;
+    }
+
+    .edit-form {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -19,7 +27,6 @@
   
     label {
       font-size: 20px;
-      color: #1e3569;
     }
   
     .title {
@@ -28,9 +35,9 @@
       margin-right: 10px;
       padding: 10px 20px;
       border: 0.5px none;
-      background-color: #e6e6e6;
       border-radius: 20px;
       font-size: 14px;
+      color: #1e3569;
     }
     
     .priority {
@@ -39,9 +46,9 @@
       margin: 2px;
       padding: 10px 20px;
       border: 0.5px none;
-      background-color: #e6e6e6;
       border-radius: 20px;
       font-size: 14px;
+      color:#1e3569;
     }
 
     input:focus {
@@ -54,7 +61,7 @@
   
     button {
       background-color: #008cba;
-      margin: 2px;
+      margin-left: 2px;
       border: none;
       border-radius: 20px;
       color: white;
@@ -67,6 +74,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      background-color: white;
+      padding: 5px;
+      margin-bottom: 5px;
+      border-radius: 5px;
     }
 
     .todo-content {
@@ -75,17 +86,18 @@
     }
     
     .toggle-complete {
-      height: 20px;
-      width: 20px;
+      height: 15px;
+      width: 15px;
       border-radius: 50%;
-      border: 2px solid black;
+      border: 2px solid gray;
       margin-right: 10px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: 0.3s;
     }
 
     .toggle-complete.completed {
-      background-color: black;
+      border: 2px solid #008cba;
+      background-color: #008cba;
     }
 
     h3 {
@@ -93,4 +105,3 @@
     }
 
 }
-
