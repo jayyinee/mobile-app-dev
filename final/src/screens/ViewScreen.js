@@ -18,7 +18,7 @@ const ViewScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      {/* header: image on the left with title & ratings on the */}
+      {/* header: image on the left with title & ratings on the right*/}
       <View style={styles.headerContainer}>
         {post.image && (
           <Image
