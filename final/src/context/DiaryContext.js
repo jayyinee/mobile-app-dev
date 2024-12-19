@@ -1,57 +1,75 @@
 import createDataContext from './createDataContext'
+import jsonServer from '../api/jsonServer'
 
 const postReducer = (state, action) => {
   switch (action.type) {
-    case 'add_post':
-      return [
-        ...state,
-        {
-          id: Math.floor(Math.random() * 10000),
-          title: action.payload.title,
-          content: action.payload.content,
-          image: action.payload.image,
-          ratings: action.payload.ratings,
-        },
-      ]
+    case 'get_posts':
+      return action.payload
     case 'delete_post':
       return state.filter((post) => post.id !== action.payload)
     case 'edit_post':
       return state.map((post) => {
         return post.id === action.payload.id ? action.payload : post
       })
-    case 'get_posts':
-      return action.payload
     default:
       return state
   }
 }
 
+const getDiaryPosts = (dispatch) => {
+  return async () => {
+    try {
+      const response = await jsonServer.get('/posts')
+      dispatch({type: 'get_posts', payload: response.data})
+    } catch (error) {
+      console.error('Error fetching posts:', error)
+    }
+  }
+}
+
 const addDiaryPost = (dispatch) => {
-  return (title, content, image, ratings, callback) => {
-    dispatch({
-      type: 'add_post',
-      payload: {title, content, image, ratings},
-    })
-    if (callback) {
-      callback()
+  return async (title, content, image, ratings, callback) => {
+    try {
+      const post = {title, content, image, ratings}
+      console.log('Adding post:', post) 
+      await jsonServer.post('/posts', post)
+
+      const response = await jsonServer.get('/posts')
+      dispatch({type: 'get_posts', payload: response.data})
+
+      if (callback) {
+        callback()
+      }
+    } catch (error) {
+      console.error('Error adding post:', error)
     }
   }
 }
 
 const deleteDiaryPost = (dispatch) => {
-  return (id) => {
-    dispatch({type: 'delete_post', payload: id})
+  return async (id) => {
+    try {
+      await jsonServer.delete(`/posts/${id}`)
+      dispatch({type: 'delete_post', payload: id})
+    } catch (error) {
+      console.error('Error deleting post:', error)
+    }
   }
 }
 
 const editDiaryPost = (dispatch) => {
-  return (id, title, content, image, ratings, callback) => {
-    dispatch({
-      type: 'edit_post',
-      payload: {id, title, content, image, ratings},
-    })
-    if (callback) {
-      callback()
+  return async (id, title, content, image, ratings, callback) => {
+    try {
+      await jsonServer.put(`/posts/${id}`, {title, content, image, ratings})
+      dispatch({
+        type: 'edit_post',
+        payload: {id, title, content, image, ratings},
+      })
+      if (callback) {
+        callback()
+      }
+    } catch (error) {
+      console.error('Error editing post:', error)
     }
   }
 }
@@ -59,6 +77,7 @@ const editDiaryPost = (dispatch) => {
 export const {Context, Provider} = createDataContext(
   postReducer,
   {
+    getDiaryPosts,
     addDiaryPost,
     deleteDiaryPost,
     editDiaryPost,

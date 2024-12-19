@@ -4,10 +4,13 @@ import {
   Text,
   TextInput,
   View,
+  ScrollView,
   Image,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import Feather from '@expo/vector-icons/Feather'
@@ -29,8 +32,6 @@ const PostForm = ({
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
-      quality: 1,
     })
 
     if (!result.canceled) {
@@ -54,177 +55,221 @@ const PostForm = ({
   }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        {/* image upload */}
-        <Text style={styles.label}>Movie/Series Image:</Text>
-        <View style={styles.imageContainer}>
-          <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-            {image ? (
-              <Image
-                source={{uri: image}}
-                style={styles.image}
-                resizeMode="contain"
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+      keyboardVerticalOffset={Platform.OS === 'ios'}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView>
+          {/* image upload */}
+          <Text style={styles.label}>Movie/Series Image:</Text>
+          <View
+            style={[
+              styles.imageContainerExpanded,
+              !image && styles.imageContainerOriginal,
+            ]}
+          >
+            <TouchableOpacity
+              onPress={pickImage}
+              style={[
+                styles.imagePickerExpanded,
+                !image && styles.imagePickerOriginal,
+              ]}
+            >
+              {image ? (
+                <Image
+                  source={{uri: image}}
+                  style={styles.image}
+                  resizeMode="contain"
+                />
+              ) : (
+                <View style={styles.imagePickerContent}>
+                  <Feather name="upload" size={24} color="black" />
+                  <Text style={styles.imagePickerText}>Choose File</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+
+          {/* Rest of the form remains the same */}
+          <Text style={styles.label}>Title:</Text>
+          <TextInput
+            autoCorrect={false}
+            style={styles.input}
+            value={title}
+            onChangeText={(text) => setTitle(text)}
+            placeholder="Movie/Series Title"
+          />
+
+          <Text style={styles.label}>Ratings:</Text>
+          <View style={styles.ratingsContainer}>
+            <View style={styles.ratingItem}>
+              <Text style={styles.ratingItemLabel}>Characters:</Text>
+              <TextInput
+                style={styles.ratingInput}
+                keyboardType="numeric"
+                value={ratings.characters.toString()}
+                onChangeText={(text) => updateRating('characters', text)}
+                maxLength={2}
               />
-            ) : (
-              <Text style={styles.imagePickerText}>
-                <Feather name="upload" size={24} color="black" /> Choose File
-              </Text>
-            )}
+            </View>
+            <View style={styles.ratingItem}>
+              <Text style={styles.ratingItemLabel}>Plot:</Text>
+              <TextInput
+                style={styles.ratingInput}
+                keyboardType="numeric"
+                value={ratings.plot.toString()}
+                onChangeText={(text) => updateRating('plot', text)}
+                maxLength={2}
+              />
+            </View>
+            <View style={styles.ratingItem}>
+              <Text style={styles.ratingItemLabel}>Production:</Text>
+              <TextInput
+                style={styles.ratingInput}
+                keyboardType="numeric"
+                value={ratings.production.toString()}
+                onChangeText={(text) => updateRating('production', text)}
+                maxLength={2}
+              />
+            </View>
+          </View>
+
+          <Text style={styles.overallRating}>
+            Overall Rating: {calculateOverallRating()} / 10
+          </Text>
+
+          <Text style={styles.label}>Review:</Text>
+          <TextInput
+            autoCorrect={false}
+            style={styles.input}
+            value={content}
+            onChangeText={(text) => setContent(text)}
+            multiline
+            placeholder="Write your review here"
+          />
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              onSubmit(title, content, image, {
+                characters: ratings.characters,
+                plot: ratings.plot,
+                production: ratings.production,
+                overall: calculateOverallRating(),
+              })
+            }}
+          >
+            <Text style={styles.buttonText}>Save Review</Text>
           </TouchableOpacity>
-        </View>
-
-        {/* movie title */}
-        <Text style={styles.label}>Title:</Text>
-        <TextInput
-          autoCorrect={false}
-          style={styles.input}
-          value={title}
-          onChangeText={(text) => setTitle(text)}
-          placeholder="Movie/Series Title"
-        />
-
-        {/* ratings */}
-        <Text style={styles.label}>Ratings:</Text>
-        <View style={styles.ratingsContainer}>
-          <View style={styles.ratingItem}>
-            <Text>Characters:</Text>
-            <TextInput
-              style={styles.ratingInput}
-              keyboardType="numeric"
-              value={ratings.characters.toString()}
-              onChangeText={(text) => updateRating('characters', text)}
-              maxLength={2}
-            />
-          </View>
-          <View style={styles.ratingItem}>
-            <Text>Plot:</Text>
-            <TextInput
-              style={styles.ratingInput}
-              keyboardType="numeric"
-              value={ratings.plot.toString()}
-              onChangeText={(text) => updateRating('plot', text)}
-              maxLength={2}
-            />
-          </View>
-          <View style={styles.ratingItem}>
-            <Text>Production:</Text>
-            <TextInput
-              style={styles.ratingInput}
-              keyboardType="numeric"
-              value={ratings.production.toString()}
-              onChangeText={(text) => updateRating('production', text)}
-              maxLength={2}
-            />
-          </View>
-        </View>
-
-        {/* review content */}
-        <Text style={styles.label}>Review:</Text>
-        <TextInput
-          autoCorrect={false}
-          style={styles.input}
-          value={content}
-          onChangeText={(text) => setContent(text)}
-          multiline
-          placeholder="Write your review here"
-        />
-
-        {/* overall rating */}
-        <Text style={styles.overallRating}>
-          Overall Rating: {calculateOverallRating()}/10
-        </Text>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            onSubmit(title, content, image, {
-              characters: ratings.characters,
-              plot: ratings.plot,
-              production: ratings.production,
-              overall: calculateOverallRating(),
-            })
-          }}
-        >
-          <Text style={styles.buttonText}>Save Review</Text>
-        </TouchableOpacity>
-      </View>
-    </TouchableWithoutFeedback>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: '#FFF8E7',
     padding: 10,
   },
   label: {
-    fontSize: 20,
-    marginTop: 10,
-    marginBottom: 5,
+    fontSize: 16,
+    fontFamily: 'Poppins',
+    fontWeight: 'bold',
+    color: '#5C2C2A',
+    marginVertical: 10,
   },
   input: {
-    fontSize: 18,
-    borderWidth: 1,
-    borderColor: '#666',
-    marginBottom: 10,
+    fontSize: 14,
+    fontFamily: 'Poppins',
+    borderWidth: 2,
+    borderColor: '#5C2C2A',
     borderRadius: 5,
     padding: 10,
+    marginBottom: 10,
+    backgroundColor: '#FFF',
   },
-  imagePicker: {
+  imagePickerExpanded: {
     alignItems: 'center',
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#666',
-    borderRadius: 5,
+    justifyContent: 'center',
+    backgroundColor: '#FFF',
     padding: 10,
+    borderWidth: 2,
+    borderColor: '#5C2C2A',
+    borderRadius: 5,
   },
-  imageContainer: {
-    width: '100%',
+  imagePickerOriginal: {
+    height: 'auto',
+  },
+  imageContainerExpanded: {
     height: 200,
     borderRadius: 5,
     overflow: 'hidden',
+    marginBottom: 10,
+  },
+  imageContainerOriginal: {
+    height: 'auto',
   },
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'contain',
+  },
+  imagePickerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
   },
   imagePickerText: {
-    color: '#666',
+    fontFamily: 'Poppins',
+    color: '#555',
+    marginLeft: 8,
   },
   ratingsContainer: {
     flexDirection: 'column',
     justifyContent: 'space-between',
-    marginBottom: 10,
   },
   ratingItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  ratingItemLabel: {
+    fontFamily: 'Poppins',
   },
   ratingInput: {
-    borderWidth: 1,
-    borderColor: '#666',
-    borderRadius: 5,
     width: 50,
-    height: 30,
-    marginLeft: 10,
+    height: 35,
     textAlign: 'center',
+    fontFamily: 'Poppins',
+    fontSize: 14,
+    borderWidth: 2,
+    borderColor: '#5C2C2A',
+    borderRadius: 5,
+    backgroundColor: '#FFF',
   },
   overallRating: {
-    fontSize: 18,
+    fontSize: 16,
+    fontFamily: 'Poppins',
+    color: '#333',
     textAlign: 'center',
-    marginVertical: 10,
-    marginBottom: 30,
+    marginVertical: 15,
   },
   button: {
-    backgroundColor: '#6495ED',
+    marginTop: 30,
+    marginBottom: 50,
+    backgroundColor: '#5C2C2A',
     paddingVertical: 12,
     borderRadius: 5,
   },
   buttonText: {
-    color: 'white',
+    color: '#FFF',
     fontSize: 18,
+    fontFamily: 'Poppins',
     fontWeight: 'bold',
     textAlign: 'center',
   },

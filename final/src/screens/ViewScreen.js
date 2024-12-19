@@ -1,10 +1,21 @@
 import React, {useContext} from 'react'
-import {StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native'
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native'
 import {Context} from '../context/DiaryContext'
+
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import {usePoppinsFonts} from '../components/PoppinsFont'
 
 const ViewScreen = ({navigation}) => {
   const id = navigation.getParam('id')
-  const {state} = useContext(Context)
+  const {state, deleteDiaryPost} = useContext(Context)
+  const fontLoads = usePoppinsFonts()
 
   const post = state.find((diaryPost) => diaryPost.id === id)
 
@@ -18,7 +29,7 @@ const ViewScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      {/* header: image on the left with title & ratings on the */}
+      {/* header: image on the left with title & ratings on the right */}
       <View style={styles.headerContainer}>
         {post.image && (
           <Image
@@ -31,21 +42,20 @@ const ViewScreen = ({navigation}) => {
           <Text style={styles.title}>{post.title}</Text>
           {post.ratings && (
             <Text style={styles.smallRating}>
-              {`Overall Rating: ${post.ratings.overall}/10`}
+              {`Overall Rating: ${post.ratings.overall} / 10`}
             </Text>
           )}
-
           {post.ratings && (
             <View style={styles.ratingsContainer}>
-              <View style={styles.ratingItem}>
-                <Text>Characters: {post.ratings.characters}/10</Text>
-              </View>
-              <View style={styles.ratingItem}>
-                <Text>Plot: {post.ratings.plot}/10</Text>
-              </View>
-              <View style={styles.ratingItem}>
-                <Text>Production: {post.ratings.production}/10</Text>
-              </View>
+              <Text style={styles.ratingItem}>
+                Characters: {post.ratings.characters} / 10
+              </Text>
+              <Text style={styles.ratingItem}>
+                Plot: {post.ratings.plot} / 10
+              </Text>
+              <Text style={styles.ratingItem}>
+                Production: {post.ratings.production} / 10
+              </Text>
             </View>
           )}
         </View>
@@ -53,6 +63,27 @@ const ViewScreen = ({navigation}) => {
 
       {/* review content */}
       <Text style={styles.content}>{post.content}</Text>
+
+      <View style={styles.actionIcons}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Edit', {id: post.id})}
+        >
+          <MaterialIcons
+            name="edit"
+            size={30}
+            color="#5C2C2A"
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => deleteDiaryPost(post.id)}>
+          <MaterialIcons
+            name="delete"
+            size={30}
+            color="#5C2C2A"
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
@@ -60,48 +91,67 @@ const ViewScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
-    backgroundColor: '#fff',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#FFF8E7',
   },
   headerContainer: {
     flexDirection: 'row',
-    // marginBottom: 10,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   image: {
-    width: 100, 
+    width: 100,
     height: 150,
     borderRadius: 5,
   },
   infoContainer: {
     flex: 1,
     marginLeft: 10,
-    justifyContent: 'center',
   },
   title: {
     fontSize: 24,
+    fontFamily: 'Poppins',
     fontWeight: 'bold',
-    marginBottom: 5,
+    paddingBottom: 5,
   },
   smallRating: {
-    fontSize: 16,
+    fontSize: 14,
+    fontFamily: 'Poppins',
     color: '#666',
   },
   ratingsContainer: {
-    marginVertical: 15,
+    marginTop: 15,
   },
   ratingItem: {
     marginBottom: 10,
   },
   content: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: '#333',
-    marginTop: 10,
+    fontSize: 17,
+    fontFamily: 'Poppins',
+    lineHeight: 24,
+    marginTop: 20,
   },
   errorText: {
     fontSize: 18,
+    fontFamily: 'Poppins',
     color: 'red',
     textAlign: 'center',
+  },
+  actionIcons: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+    position: 'absolute',
+    bottom: 30,
+    right: 10,
+  },
+  icon: {
+    marginLeft: 10,
   },
 })
 

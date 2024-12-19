@@ -18,10 +18,23 @@ const navigator = createStackNavigator(
   {
     initialRouteName: 'Index',
     defaultNavigationOptions: {
-      title: 'Diary',
+      title: 'Review Journal',
+      headerTitleStyle: {
+        fontFamily: 'Poppins',
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#5C2C2A',
+      },
+      headerTitleAlign: 'left',
+      headerStyle: {
+        height: 110,
+        backgroundColor: '#FFF8E7',
+        shadowOpacity: 0,
+      },
     },
   }
 )
+
 
 const App = createAppContainer(navigator)
 export default () => {
